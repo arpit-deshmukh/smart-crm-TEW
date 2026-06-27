@@ -10,6 +10,7 @@ import {
   Loader2,
 } from "lucide-react";
 import GoogleSignInButton from "../../components/auth/GoogleSignInButton";
+import PasswordStrengthMeter from "../../components/auth/PasswordStrengthMeter";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -56,25 +57,6 @@ const Register = () => {
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
-
-  const getPasswordStrength = (pass) => {
-  let score = 0;
-  if (pass.length >= 6) score++;
-  if (/[A-Z]/.test(pass)) score++;
-  if (/[0-9]/.test(pass)) score++;
-  if (/[^A-Za-z0-9]/.test(pass)) score++; // Bonus for special chars
-  return score;
-};
-
-const strength = getPasswordStrength(formData.password);
-
-// Helper for bar color
-const getStrengthColor = (score) => {
-  if (score <= 1) return "bg-red-500";
-  if (score === 2) return "bg-orange-500";
-  if (score === 3) return "bg-yellow-500";
-  return "bg-emerald-500";
-};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -318,20 +300,8 @@ const handleGoogleError = (msg) => {
     />
   </div>
 
-  {/* Strength Meter - Moved OUTSIDE the relative div */}
-  {formData.password && (
-    <div className="mt-3">
-      <div className="flex gap-1 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-        <div
-          className={`transition-all duration-500 ${getStrengthColor(strength)}`}
-          style={{ width: `${(strength / 4) * 100}%` }}
-        />
-      </div>
-      <p className="text-[10px] uppercase font-bold mt-1 text-slate-400 tracking-wider">
-        Strength: {['Weak', 'Fair', 'Good', 'Strong'][strength - 1] || 'Too Short'}
-      </p>
-    </div>
-  )}
+  {/* ── feat: implement password strength meter with real-time validation: done ── */}
+  <PasswordStrengthMeter password={formData.password} />
 
   {validationErrors.password && (
     <p className="text-red-500 text-xs mt-1 ml-1">
