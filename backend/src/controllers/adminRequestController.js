@@ -2,39 +2,46 @@ const User = require("../models/User");
 const logActivity = require("../utils/logActivity");
 const Mailjet = require("node-mailjet");
 
-const mailjet = Mailjet.apiConnect(
-  process.env.MAILJET_API_KEY,
-  process.env.MAILJET_SECRET_KEY
-);
+let mailjet;
+if (process.env.MAILJET_API_KEY && process.env.MAILJET_SECRET_KEY) {
+  mailjet = Mailjet.apiConnect(
+    process.env.MAILJET_API_KEY,
+    process.env.MAILJET_SECRET_KEY
+  );
+}
 
 // Common background handler
 const handleSideEffects = async (user, action, req, subject, htmlContent) => {
   try {
     if (user.email) {
-      console.log("📧 Sending email to:", user.email);
+      if (!mailjet) {
+        console.log("⚠️ Mailjet not configured, skipping email to:", user.email);
+      } else {
+        console.log("📧 Sending email to:", user.email);
 
-      const response = await mailjet
-        .post("send", { version: "v3.1" })
-        .request({
-          Messages: [
-            {
-              From: {
-                Email: process.env.MAILJET_SENDER_EMAIL, // ✅ MUST BE VERIFIED
-                Name: "TEW",
-              },
-              To: [
-                {
-                  Email: user.email,
-                  Name: user.name,
+        const response = await mailjet
+          .post("send", { version: "v3.1" })
+          .request({
+            Messages: [
+              {
+                From: {
+                  Email: process.env.MAILJET_SENDER_EMAIL, // ✅ MUST BE VERIFIED
+                  Name: "TEW",
                 },
-              ],
-              Subject: subject,
-              HTMLPart: htmlContent,
-            },
-          ],
-        });
+                To: [
+                  {
+                    Email: user.email,
+                    Name: user.name,
+                  },
+                ],
+                Subject: subject,
+                HTMLPart: htmlContent,
+              },
+            ],
+          });
 
-      console.log("✅ Email sent:", response.body);
+        console.log("✅ Email sent:", response.body);
+      }
     }
   } catch (err) {
     console.error("❌ Email failed:", err.message);

@@ -4,7 +4,7 @@ const { MongoStore } = require("connect-mongo");
 const isProduction = process.env.NODE_ENV === "production";
 
 const sessionMiddleware = session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || "fallback_secret_key",
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
