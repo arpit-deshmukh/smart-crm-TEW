@@ -22,27 +22,12 @@ const revenueSummaryRoutes = require("./routes/revenueSummaryRoutes");
 const app = express();
 app.set("trust proxy", 1);
 
-// const allowedOrigins = [
-//   process.env.FRONTEND_URL,
-//   "https://smart-crm-alpha.vercel.app",
-// ];
-
-// app.use(
-//   cors({
-//     origin: allowedOrigins,
-//     credentials: true,
-//   })
-// );
-
-
 app.use(
   cors({
-    origin: "https://smart-crm-alpha.vercel.app", // ⚠️ replace this
-    credentials: true, // ✅ REQUIRED
+    origin: [process.env.FRONTEND_URL, "https://smart-crm-tew.vercel.app"].filter(Boolean),
+    credentials: true
   })
 );
-
-
 app.use(express.json());
 app.use(sessionMiddleware);
 
