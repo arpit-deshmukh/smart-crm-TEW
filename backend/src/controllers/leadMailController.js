@@ -12,12 +12,14 @@ const sendBulkLeadMail = async (req, res) => {
 
     if (!Array.isArray(leadIds) || leadIds.length === 0) {
       return res.status(400).json({
+        success: false,
         message: "Lead IDs are required",
       });
     }
 
     if (!targetStatus || !templateId) {
       return res.status(400).json({
+        success: false,
         message: "Target status and template are required",
       });
     }
@@ -29,6 +31,7 @@ const sendBulkLeadMail = async (req, res) => {
 
     if (!template) {
       return res.status(404).json({
+        success: false,
         message: "Email template not found",
       });
     }
@@ -49,6 +52,7 @@ const sendBulkLeadMail = async (req, res) => {
 
     if (leads.length === 0) {
       return res.status(400).json({
+        success: false,
         message: `No leads found on this page with status "${targetStatus}"`,
       });
     }
@@ -87,6 +91,7 @@ const sendBulkLeadMail = async (req, res) => {
 
     if (!webhookUrl) {
       return res.status(500).json({
+        success: false,
         message: "n8n webhook URL is not configured",
       });
     }
@@ -106,8 +111,9 @@ const sendBulkLeadMail = async (req, res) => {
     console.log("STEP 8: Lead statuses updated");
 
     return res.status(200).json({
+      success: true,
       message: `${leads.length} lead emails sent successfully`,
-      updatedCount: leads.length,
+      data: { updatedCount: leads.length },
     });
 
     await logActivity({
@@ -131,8 +137,8 @@ const sendBulkLeadMail = async (req, res) => {
     }
 
     return res.status(500).json({
+      success: false,
       message: "Error sending lead emails",
-      error: error.message,
     });
   }
 };

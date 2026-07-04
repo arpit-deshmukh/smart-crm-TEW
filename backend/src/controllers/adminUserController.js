@@ -8,11 +8,11 @@ const getAllUsers = async (req, res) => {
       .select("-password")
       .sort({ createdAt: -1 });
 
-    res.status(200).json(users);
+    res.status(200).json({ success: true, data: users });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching users",
-      error: error.message,
     });
   }
 };
@@ -23,6 +23,7 @@ const updateUserRole = async (req, res) => {
 
     if (!role || !["admin", "user"].includes(role)) {
       return res.status(400).json({
+        success: false,
         message: "Valid role is required",
       });
     }
@@ -31,6 +32,7 @@ const updateUserRole = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
+        success: false,
         message: "User not found",
       });
     }
@@ -39,13 +41,14 @@ const updateUserRole = async (req, res) => {
     await user.save();
 
     res.status(200).json({
+      success: true,
       message: "User role updated successfully",
-      user,
+      data: user,
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error updating user role",
-      error: error.message,
     });
   }
 };
@@ -56,6 +59,7 @@ const toggleUserStatus = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
+        success: false,
         message: "User not found",
       });
     }
@@ -64,13 +68,14 @@ const toggleUserStatus = async (req, res) => {
     await user.save();
 
     res.status(200).json({
+      success: true,
       message: `User ${user.isActive ? "activated" : "deactivated"} successfully`,
-      user,
+      data: user,
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error updating user status",
-      error: error.message,
     });
   }
 };
@@ -81,6 +86,7 @@ const deleteUser = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
+        success: false,
         message: "User not found",
       });
     }
@@ -88,12 +94,13 @@ const deleteUser = async (req, res) => {
     await User.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
+      success: true,
       message: "User deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error deleting user",
-      error: error.message,
     });
   }
 };

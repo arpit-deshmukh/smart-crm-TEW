@@ -124,30 +124,33 @@ const getAdminDashboardSummary = async (req, res) => {
     );
 
     res.status(200).json({
-      stats: {
-        totalUsers,
-        totalAdmins,
-        totalNormalUsers,
-        totalLeads,
-        newLeads,
-        contactedLeads,
-        totalDeals,
-        wonDeals,
-        totalCompanies,
-        totalTemplates,
-        totalFollowups,
-        pendingFollowups,
-        totalRevenue,
+      success: true,
+      data: {
+        stats: {
+          totalUsers,
+          totalAdmins,
+          totalNormalUsers,
+          totalLeads,
+          newLeads,
+          contactedLeads,
+          totalDeals,
+          wonDeals,
+          totalCompanies,
+          totalTemplates,
+          totalFollowups,
+          pendingFollowups,
+          totalRevenue,
+        },
+        monthlyRevenue,
+        recentUsers,
+        recentLeads,
+        upcomingFollowups,
       },
-      monthlyRevenue,
-      recentUsers,
-      recentLeads,
-      upcomingFollowups,
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching admin dashboard summary",
-      error: error.message,
     });
   }
 };

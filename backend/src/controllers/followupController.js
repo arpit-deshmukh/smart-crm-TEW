@@ -21,6 +21,7 @@ const createFollowup = async (req, res) => {
 
     if (!title || !followupDate) {
       return res.status(400).json({
+        success: false,
         message: "Title and followup date are required",
       });
     }
@@ -43,8 +44,9 @@ const createFollowup = async (req, res) => {
     });
 
     res.status(201).json({
+      success: true,
       message: "Followup created successfully",
-      followup,
+      data: followup,
     });
 
     await logActivity({
@@ -56,8 +58,8 @@ const createFollowup = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error creating followup",
-      error: error.message,
     });
   }
 };
@@ -82,11 +84,11 @@ const getAllFollowups = async (req, res) => {
         .sort({ followupDate: 1 });
     }
 
-    res.status(200).json(followups);
+    res.status(200).json({ success: true, data: followups });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching followups",
-      error: error.message,
     });
   }
 };
@@ -99,15 +101,16 @@ const getFollowupById = async (req, res) => {
 
     if (!followup) {
       return res.status(404).json({
+        success: false,
         message: "Followup not found",
       });
     }
 
-    res.status(200).json(followup);
+    res.status(200).json({ success: true, data: followup });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching followup",
-      error: error.message,
     });
   }
 };
@@ -118,6 +121,7 @@ const updateFollowup = async (req, res) => {
 
     if (!followup) {
       return res.status(404).json({
+        success: false,
         message: "Followup not found",
       });
     }
@@ -127,6 +131,7 @@ const updateFollowup = async (req, res) => {
       followup.createdBy.toString() !== req.session.user.id
     ) {
       return res.status(403).json({
+        success: false,
         message: "You are not allowed to edit this followup",
       });
     }
@@ -143,8 +148,9 @@ const updateFollowup = async (req, res) => {
       .populate("dealId", "title company contactPerson");
 
     res.status(200).json({
+      success: true,
       message: "Followup updated successfully",
-      followup: updatedFollowup,
+      data: updatedFollowup,
     });
 
     await logActivity({
@@ -155,8 +161,8 @@ const updateFollowup = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error updating followup",
-      error: error.message,
     });
   }
 };
@@ -167,6 +173,7 @@ const deleteFollowup = async (req, res) => {
 
     if (!followup) {
       return res.status(404).json({
+        success: false,
         message: "Followup not found",
       });
     }
@@ -176,6 +183,7 @@ const deleteFollowup = async (req, res) => {
       followup.createdBy.toString() !== req.session.user.id
     ) {
       return res.status(403).json({
+        success: false,
         message: "You are not allowed to delete this followup",
       });
     }
@@ -183,6 +191,7 @@ const deleteFollowup = async (req, res) => {
     await Followup.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
+      success: true,
       message: "Followup deleted successfully",
     });
     
@@ -194,8 +203,8 @@ const deleteFollowup = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error deleting followup",
-      error: error.message,
     });
   }
 };
@@ -214,6 +223,7 @@ const convertLeadToFollowup = async (req, res) => {
 
     if (!leadId) {
       return res.status(400).json({
+        success: false,
         message: "Lead ID is required",
       });
     }
@@ -222,6 +232,7 @@ const convertLeadToFollowup = async (req, res) => {
 
     if (!lead) {
       return res.status(404).json({
+        success: false,
         message: "Lead not found",
       });
     }
@@ -248,8 +259,9 @@ const convertLeadToFollowup = async (req, res) => {
     });
 
     res.status(201).json({
+      success: true,
       message: "Lead converted to followup successfully",
-      followup,
+      data: followup,
     });
 
     await logActivity({
@@ -260,8 +272,8 @@ const convertLeadToFollowup = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error converting lead to followup",
-      error: error.message,
     });
   }
 };

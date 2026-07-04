@@ -105,14 +105,17 @@ const getRevenueSummary = async (req, res) => {
     );
 
     return res.status(200).json({
-      weekly,
-      monthly,
-      yearly,
+      success: true,
+      data: {
+        weekly,
+        monthly,
+        yearly,
+      },
     });
   } catch (error) {
     return res.status(500).json({
+      success: false,
       message: "Error fetching revenue summary",
-      error: error.message,
     });
   }
 };

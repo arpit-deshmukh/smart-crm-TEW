@@ -16,6 +16,7 @@ const createContact = async (req, res) => {
 
     if (!fullName || !company || !email) {
       return res.status(400).json({
+        success: false,
         message: "Full name, company and email are required",
       });
     }
@@ -34,8 +35,9 @@ const createContact = async (req, res) => {
     });
 
     res.status(201).json({
+      success: true,
       message: "Contact created successfully",
-      contact,
+      data: contact,
     });
 
     await logActivity({
@@ -46,8 +48,8 @@ const createContact = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error creating contact",
-      error: error.message,
     });
   }
 };
@@ -68,11 +70,11 @@ const getAllContacts = async (req, res) => {
         .sort({ createdAt: -1 });
     }
 
-    res.status(200).json(contacts);
+    res.status(200).json({ success: true, data: contacts });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching contacts",
-      error: error.message,
     });
   }
 };
@@ -83,15 +85,16 @@ const getContactById = async (req, res) => {
 
     if (!contact) {
       return res.status(404).json({
+        success: false,
         message: "Contact not found",
       });
     }
 
-    res.status(200).json(contact);
+    res.status(200).json({ success: true, data: contact });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching contact",
-      error: error.message,
     });
   }
 };
@@ -102,6 +105,7 @@ const updateContact = async (req, res) => {
 
     if (!contact) {
       return res.status(404).json({
+        success: false,
         message: "Contact not found",
       });
     }
@@ -111,6 +115,7 @@ const updateContact = async (req, res) => {
       contact.createdBy.toString() !== req.session.user.id
     ) {
       return res.status(403).json({
+        success: false,
         message: "You are not allowed to edit this contact",
       });
     }
@@ -125,8 +130,9 @@ const updateContact = async (req, res) => {
     );
 
     res.status(200).json({
+      success: true,
       message: "Contact updated successfully",
-      contact: updatedContact,
+      data: updatedContact,
     });
 
     await logActivity({
@@ -137,8 +143,8 @@ const updateContact = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error updating contact",
-      error: error.message,
     });
   }
 };
@@ -149,6 +155,7 @@ const deleteContact = async (req, res) => {
 
     if (!contact) {
       return res.status(404).json({
+        success: false,
         message: "Contact not found",
       });
     }
@@ -158,6 +165,7 @@ const deleteContact = async (req, res) => {
       contact.createdBy.toString() !== req.session.user.id
     ) {
       return res.status(403).json({
+        success: false,
         message: "You are not allowed to delete this contact",
       });
     }
@@ -165,6 +173,7 @@ const deleteContact = async (req, res) => {
     await Contact.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
+      success: true,
       message: "Contact deleted successfully",
     });
 
@@ -176,8 +185,8 @@ const deleteContact = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error deleting contact",
-      error: error.message,
     });
   }
 };

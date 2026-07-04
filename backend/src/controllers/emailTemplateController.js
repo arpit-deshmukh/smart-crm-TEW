@@ -7,6 +7,7 @@ const createEmailTemplate = async (req, res) => {
 
     if (!title || !subject || !body) {
       return res.status(400).json({
+        success: false,
         message: "Title, subject and body are required",
       });
     }
@@ -21,8 +22,9 @@ const createEmailTemplate = async (req, res) => {
     });
 
     res.status(201).json({
+      success: true,
       message: "Email template created successfully",
-      template,
+      data: template,
     });
 
     await logActivity({
@@ -33,8 +35,8 @@ const createEmailTemplate = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error creating email template",
-      error: error.message,
     });
   }
 };
@@ -55,11 +57,11 @@ const getAllEmailTemplates = async (req, res) => {
         .sort({ createdAt: -1 });
     }
 
-    res.status(200).json(templates);
+    res.status(200).json({ success: true, data: templates });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching email templates",
-      error: error.message,
     });
   }
 };
@@ -70,15 +72,16 @@ const getEmailTemplateById = async (req, res) => {
 
     if (!template) {
       return res.status(404).json({
+        success: false,
         message: "Email template not found",
       });
     }
 
-    res.status(200).json(template);
+    res.status(200).json({ success: true, data: template });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching email template",
-      error: error.message,
     });
   }
 };
@@ -89,6 +92,7 @@ const updateEmailTemplate = async (req, res) => {
 
     if (!template) {
       return res.status(404).json({
+        success: false,
         message: "Email template not found",
       });
     }
@@ -98,6 +102,7 @@ const updateEmailTemplate = async (req, res) => {
       template.createdBy.toString() !== req.session.user.id
     ) {
       return res.status(403).json({
+        success: false,
         message: "You are not allowed to edit this email template",
       });
     }
@@ -112,8 +117,9 @@ const updateEmailTemplate = async (req, res) => {
     );
 
     res.status(200).json({
+      success: true,
       message: "Email template updated successfully",
-      template: updatedTemplate,
+      data: updatedTemplate,
     });
 
     await logActivity({
@@ -124,8 +130,8 @@ const updateEmailTemplate = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error updating email template",
-      error: error.message,
     });
   }
 };
@@ -136,6 +142,7 @@ const deleteEmailTemplate = async (req, res) => {
 
     if (!template) {
       return res.status(404).json({
+        success: false,
         message: "Email template not found",
       });
     }
@@ -145,6 +152,7 @@ const deleteEmailTemplate = async (req, res) => {
       template.createdBy.toString() !== req.session.user.id
     ) {
       return res.status(403).json({
+        success: false,
         message: "You are not allowed to delete this email template",
       });
     }
@@ -152,6 +160,7 @@ const deleteEmailTemplate = async (req, res) => {
     await EmailTemplate.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
+      success: true,
       message: "Email template deleted successfully",
     });
 
@@ -163,8 +172,8 @@ const deleteEmailTemplate = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error deleting email template",
-      error: error.message,
     });
   }
 };

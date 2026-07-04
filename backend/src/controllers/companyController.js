@@ -17,6 +17,7 @@ const createCompany = async (req, res) => {
 
     if (!companyName) {
       return res.status(400).json({
+        success: false,
         message: "Company name is required",
       });
     }
@@ -36,8 +37,9 @@ const createCompany = async (req, res) => {
     });
 
     res.status(201).json({
+      success: true,
       message: "Company created successfully",
-      company,
+      data: company,
     });
 
     await logActivity({
@@ -48,8 +50,8 @@ const createCompany = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error creating company",
-      error: error.message,
     });
   }
 };
@@ -70,11 +72,11 @@ const getAllCompanies = async (req, res) => {
         .sort({ createdAt: -1 });
     }
 
-    res.status(200).json(companies);
+    res.status(200).json({ success: true, data: companies });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching companies",
-      error: error.message,
     });
   }
 };
@@ -85,15 +87,16 @@ const getCompanyById = async (req, res) => {
 
     if (!company) {
       return res.status(404).json({
+        success: false,
         message: "Company not found",
       });
     }
 
-    res.status(200).json(company);
+    res.status(200).json({ success: true, data: company });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching company",
-      error: error.message,
     });
   }
 };
@@ -104,6 +107,7 @@ const updateCompany = async (req, res) => {
 
     if (!company) {
       return res.status(404).json({
+        success: false,
         message: "Company not found",
       });
     }
@@ -113,6 +117,7 @@ const updateCompany = async (req, res) => {
       company.createdBy.toString() !== req.session.user.id
     ) {
       return res.status(403).json({
+        success: false,
         message: "You are not allowed to edit this company",
       });
     }
@@ -127,8 +132,9 @@ const updateCompany = async (req, res) => {
     );
 
     res.status(200).json({
+      success: true,
       message: "Company updated successfully",
-      company: updatedCompany,
+      data: updatedCompany,
     });
 
       await logActivity({
@@ -139,8 +145,8 @@ const updateCompany = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error updating company",
-      error: error.message,
     });
   }
 };
@@ -151,6 +157,7 @@ const deleteCompany = async (req, res) => {
 
     if (!company) {
       return res.status(404).json({
+        success: false,
         message: "Company not found",
       });
     }
@@ -160,6 +167,7 @@ const deleteCompany = async (req, res) => {
       company.createdBy.toString() !== req.session.user.id
     ) {
       return res.status(403).json({
+        success: false,
         message: "You are not allowed to delete this company",
       });
     }
@@ -167,6 +175,7 @@ const deleteCompany = async (req, res) => {
     await Company.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
+      success: true,
       message: "Company deleted successfully",
     });
 
@@ -178,8 +187,8 @@ const deleteCompany = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error deleting company",
-      error: error.message,
     });
   }
 };

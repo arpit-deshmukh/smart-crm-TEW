@@ -19,6 +19,7 @@ const registerUser = async (req, res) => {
 
     if (!name || !email || !password) {
       return res.status(400).json({
+        success: false,
         message: "Name, email and password are required",
       });
     }
@@ -27,6 +28,7 @@ const registerUser = async (req, res) => {
 
     if (existingUser) {
       return res.status(400).json({
+        success: false,
         message: "User already exists with this email",
       });
     }
@@ -43,8 +45,9 @@ const registerUser = async (req, res) => {
     });
 
     return res.status(201).json({
+      success: true,
       message: "Account request submitted successfully. Wait for admin approval.",
-      user: {
+      data: {
         id: newUser._id,
         name: newUser.name,
         email: newUser.email,
@@ -53,8 +56,8 @@ const registerUser = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
+      success: false,
       message: "Error in registration",
-      error: error.message,
     });
   }
 };
@@ -65,6 +68,7 @@ const loginUser = async (req, res) => {
 
     if (!email || !password) {
       return res.status(400).json({
+        success: false,
         message: "Email and password are required",
       });
     }
@@ -73,6 +77,7 @@ const loginUser = async (req, res) => {
 
     if (!user) {
       return res.status(401).json({
+        success: false,
         message: "Invalid email or password",
       });
     }
@@ -80,12 +85,14 @@ const loginUser = async (req, res) => {
     if (user.role !== "admin") {
       if (user.approvalStatus === "pending") {
         return res.status(403).json({
+          success: false,
           message: "Your account request is still pending admin approval",
         });
       }
 
       if (user.approvalStatus === "denied") {
         return res.status(403).json({
+          success: false,
           message: "Your account request was denied by admin",
         });
       }
@@ -95,6 +102,7 @@ const loginUser = async (req, res) => {
 
     if (!isPasswordMatch) {
       return res.status(401).json({
+        success: false,
         message: "Invalid email or password",
       });
     }
@@ -107,13 +115,14 @@ const loginUser = async (req, res) => {
     };
 
     return res.status(200).json({
+      success: true,
       message: "Login successful",
-      user: req.session.user,
+      data: req.session.user,
     });
   } catch (error) {
     return res.status(500).json({
+      success: false,
       message: "Error in login",
-      error: error.message,
     });
   }
 };
@@ -123,6 +132,7 @@ const logoutUser = async (req, res) => {
     req.session.destroy((err) => {
       if (err) {
         return res.status(500).json({
+          success: false,
           message: "Logout failed",
         });
       }
@@ -130,13 +140,14 @@ const logoutUser = async (req, res) => {
       res.clearCookie("connect.sid");
 
       return res.status(200).json({
+        success: true,
         message: "Logout successful",
       });
     });
   } catch (error) {
     return res.status(500).json({
+      success: false,
       message: "Error in logout",
-      error: error.message,
     });
   }
 };
@@ -145,17 +156,19 @@ const getCurrentUser = async (req, res) => {
   try {
     if (!req.session.user) {
       return res.status(401).json({
+        success: false,
         message: "User not logged in",
       });
     }
 
     return res.status(200).json({
-      user: req.session.user,
+      success: true,
+      data: req.session.user,
     });
   } catch (error) {
     return res.status(500).json({
+      success: false,
       message: "Error fetching current user",
-      error: error.message,
     });
   }
 };
@@ -166,6 +179,7 @@ const googleAuth = async (req, res) => {
 
     if (!credential) {
       return res.status(400).json({
+        success: false,
         message: "Google credential is required",
       });
     }
@@ -179,6 +193,7 @@ const googleAuth = async (req, res) => {
 
     if (!payload || !payload.email) {
       return res.status(400).json({
+        success: false,
         message: "Invalid Google account data",
       });
     }
@@ -190,6 +205,7 @@ const googleAuth = async (req, res) => {
 
     if (!emailVerified) {
       return res.status(400).json({
+        success: false,
         message: "Google email is not verified",
       });
     }
@@ -201,12 +217,14 @@ const googleAuth = async (req, res) => {
       if (user.role !== "admin") {
         if (user.approvalStatus === "pending") {
           return res.status(403).json({
+            success: false,
             message: "Your account request is still pending admin approval",
           });
         }
 
         if (user.approvalStatus === "denied") {
           return res.status(403).json({
+            success: false,
             message: "Your account request was denied by admin",
           });
         }
@@ -226,8 +244,9 @@ const googleAuth = async (req, res) => {
       };
 
       return res.status(200).json({
+        success: true,
         message: "Google login successful",
-        user: req.session.user,
+        data: req.session.user,
       });
     }
 
@@ -247,9 +266,10 @@ const googleAuth = async (req, res) => {
     });
 
     return res.status(201).json({
+      success: true,
       message:
         "Google account request submitted successfully. Wait for admin approval.",
-      user: {
+      data: {
         id: user._id,
         name: user.name,
         email: user.email,
@@ -258,8 +278,8 @@ const googleAuth = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
+      success: false,
       message: "Error in Google authentication",
-      error: error.message,
     });
   }
 };
@@ -270,6 +290,7 @@ const forgotPassword = async (req, res) => {
 
     if (!email) {
       return res.status(400).json({
+        success: false,
         message: "Email is required",
       });
     }
@@ -279,6 +300,7 @@ const forgotPassword = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
+        success: false,
         message: "No account found with this email",
       });
     }
@@ -309,12 +331,13 @@ const forgotPassword = async (req, res) => {
     });
 
     return res.status(200).json({
+      success: true,
       message: "Password reset link sent to your email",
     });
   } catch (error) {
     return res.status(500).json({
+      success: false,
       message: "Error sending reset link",
-      error: error.message,
     });
   }
 };
@@ -326,6 +349,7 @@ const resetPassword = async (req, res) => {
 
     if (!password) {
       return res.status(400).json({
+        success: false,
         message: "New password is required",
       });
     }
@@ -337,6 +361,7 @@ const resetPassword = async (req, res) => {
 
     if (!user) {
       return res.status(400).json({
+        success: false,
         message: "Invalid or expired reset token",
       });
     }
@@ -349,12 +374,13 @@ const resetPassword = async (req, res) => {
     await user.save();
 
     return res.status(200).json({
+      success: true,
       message: "Password reset successful",
     });
   } catch (error) {
     return res.status(500).json({
+      success: false,
       message: "Error resetting password",
-      error: error.message,
     });
   }
 };

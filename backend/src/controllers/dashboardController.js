@@ -95,25 +95,28 @@ const getUserDashboardSummary = async (req, res) => {
     console.log("Total Revenue Calculated:", totalRevenue);
 
     res.status(200).json({
-      stats: {
-        totalLeads,
-        newLeads,
-        contactedLeads,
-        totalDeals,
-        wonDeals,
-        totalCompanies,
-        totalTemplates,
-        totalRevenue,
+      success: true,
+      data: {
+        stats: {
+          totalLeads,
+          newLeads,
+          contactedLeads,
+          totalDeals,
+          wonDeals,
+          totalCompanies,
+          totalTemplates,
+          totalRevenue,
+        },
+        monthlyRevenue,
+        upcomingFollowups,
+        recentLeads,
       },
-      monthlyRevenue,
-      upcomingFollowups,
-      recentLeads,
     });
   } catch (error) {
     console.error("Dashboard Error:", error);
     res.status(500).json({
+      success: false,
       message: "Error fetching dashboard summary",
-      error: error.message,
     });
   }
 };

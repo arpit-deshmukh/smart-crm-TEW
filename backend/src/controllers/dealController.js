@@ -25,6 +25,7 @@ const createDeal = async (req, res) => {
 
     if (!title || !company || !contactPerson || !email) {
       return res.status(400).json({
+        success: false,
         message: "Title, company, contact person and email are required",
       });
     }
@@ -37,6 +38,7 @@ const createDeal = async (req, res) => {
       const existingDeal = await Deal.findOne({ leadId });
       if (existingDeal) {
         return res.status(400).json({
+          success: false,
           message: "This lead is already converted into a deal",
         });
       }
@@ -62,8 +64,9 @@ const createDeal = async (req, res) => {
     }
 
     return res.status(201).json({
+      success: true,
       message: "Deal created successfully",
-      deal,
+      data: deal,
     });
 
     
@@ -78,8 +81,8 @@ const createDeal = async (req, res) => {
     console.log("CREATE DEAL ERROR:", error);
 
     return res.status(500).json({
+      success: false,
       message: "Error creating deal",
-      error: error.message,
     });
   }
   
@@ -104,11 +107,11 @@ const getAllDeals = async (req, res) => {
         .sort({ createdAt: -1 });
     }
 
-    res.status(200).json(deals);
+    res.status(200).json({ success: true, data: deals });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching deals",
-      error: error.message,
     });
   }
 };
@@ -122,15 +125,16 @@ const getDealById = async (req, res) => {
 
     if (!deal) {
       return res.status(404).json({
+        success: false,
         message: "Deal not found",
       });
     }
 
-    res.status(200).json(deal);
+    res.status(200).json({ success: true, data: deal });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching deal",
-      error: error.message,
     });
   }
 };
@@ -140,6 +144,7 @@ const updateDeal = async (req, res) => {
     // ← Add this check at the top of ALL protected controllers
     if (!req.session || !req.session.user) {
       return res.status(401).json({ 
+        success: false,
         message: "Unauthorized: Please login again" 
       });
     }
@@ -147,7 +152,7 @@ const updateDeal = async (req, res) => {
     const deal = await Deal.findById(req.params.id);
 
     if (!deal) {
-      return res.status(404).json({ message: "Deal not found" });
+      return res.status(404).json({ success: false, message: "Deal not found" });
     }
 
     // Permission check - now safe
@@ -156,6 +161,7 @@ const updateDeal = async (req, res) => {
 
     if (!isAdmin && !isOwner) {
       return res.status(403).json({
+        success: false,
         message: "You are not allowed to edit this deal",
       });
     }
@@ -191,8 +197,9 @@ const updateDeal = async (req, res) => {
     ).populate("leadId", "title name company email status");
 
     res.status(200).json({
+      success: true,
       message: "Deal updated successfully",
-      deal: updatedDeal,
+      data: updatedDeal,
     });
 
     
@@ -206,8 +213,8 @@ const updateDeal = async (req, res) => {
   } catch (error) {
     console.error("UPDATE DEAL ERROR:", error);
     res.status(500).json({
+      success: false,
       message: "Error updating deal",
-      error: error.message,
     });
   }
 };
@@ -218,6 +225,7 @@ const deleteDeal = async (req, res) => {
 
     if (!deal) {
       return res.status(404).json({
+        success: false,
         message: "Deal not found",
       });
     }
@@ -227,6 +235,7 @@ const deleteDeal = async (req, res) => {
       deal.createdBy.toString() !== req.session.user.id
     ) {
       return res.status(403).json({
+        success: false,
         message: "You are not allowed to delete this deal",
       });
     }
@@ -238,6 +247,7 @@ const deleteDeal = async (req, res) => {
     await Deal.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
+      success: true,
       message: "Deal deleted successfully",
     });
 
@@ -250,8 +260,8 @@ const deleteDeal = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error deleting deal",
-      error: error.message,
     });
   }
 };
@@ -263,6 +273,7 @@ const convertLeadToDeal = async (req, res) => {
 
     if (!leadId) {
       return res.status(400).json({
+        success: false,
         message: "Lead ID is required",
       });
     }
@@ -271,6 +282,7 @@ const convertLeadToDeal = async (req, res) => {
 
     if (!lead) {
       return res.status(404).json({
+        success: false,
         message: "Lead not found",
       });
     }
@@ -279,6 +291,7 @@ const convertLeadToDeal = async (req, res) => {
 
     if (existingDeal) {
       return res.status(400).json({
+        success: false,
         message: "This lead is already converted into a deal",
       });
     }
@@ -301,8 +314,9 @@ const convertLeadToDeal = async (req, res) => {
     await Lead.findByIdAndUpdate(leadId, { status: "converted" });
 
     res.status(201).json({
+      success: true,
       message: "Lead converted to deal successfully",
-      deal,
+      data: deal,
     });
 
     
@@ -314,8 +328,8 @@ const convertLeadToDeal = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error converting lead to deal",
-      error: error.message,
     });
   }
 };

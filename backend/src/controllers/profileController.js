@@ -10,17 +10,19 @@ const getProfile = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
+        success: false,
         message: "User not found",
       });
     }
 
     res.status(200).json({
-      user,
+      success: true,
+      data: user,
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching profile",
-      error: error.message,
     });
   }
 };
@@ -34,6 +36,7 @@ const updateProfile = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
+        success: false,
         message: "User not found",
       });
     }
@@ -52,8 +55,9 @@ const updateProfile = async (req, res) => {
     };
 
     res.status(200).json({
+      success: true,
       message: "Profile updated successfully",
-      user: {
+      data: {
         _id: user._id,
         name: user.name,
         email: user.email,
@@ -73,8 +77,8 @@ const updateProfile = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error updating profile",
-      error: error.message,
     });
   }
 };
@@ -86,6 +90,7 @@ const updatePassword = async (req, res) => {
 
     if (!currentPassword || !newPassword) {
       return res.status(400).json({
+        success: false,
         message: "Current password and new password are required",
       });
     }
@@ -94,6 +99,7 @@ const updatePassword = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
+        success: false,
         message: "User not found",
       });
     }
@@ -102,6 +108,7 @@ const updatePassword = async (req, res) => {
 
     if (!isMatch) {
       return res.status(400).json({
+        success: false,
         message: "Current password is incorrect",
       });
     }
@@ -110,6 +117,7 @@ const updatePassword = async (req, res) => {
     await user.save();
 
     res.status(200).json({
+      success: true,
       message: "Password updated successfully",
     });
 
@@ -121,8 +129,8 @@ const updatePassword = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error updating password",
-      error: error.message,
     });
   }
 };
@@ -136,6 +144,7 @@ const deleteAccount = async (req, res) => {
     req.session.destroy((err) => {
       if (err) {
         return res.status(500).json({
+          success: false,
           message: "Account deleted but session cleanup failed",
         });
       }
@@ -143,6 +152,7 @@ const deleteAccount = async (req, res) => {
       res.clearCookie("connect.sid");
 
       return res.status(200).json({
+        success: true,
         message: "Account deleted successfully",
       });
     });
@@ -155,8 +165,8 @@ const deleteAccount = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error deleting account",
-      error: error.message,
     });
   }
 };

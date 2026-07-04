@@ -18,6 +18,7 @@ const createLead = async (req, res) => {
 
     if (!title || !name || !company || !email) {
       return res.status(400).json({
+        success: false,
         message: "Title, name, company and email are required",
       });
     }
@@ -38,8 +39,9 @@ const createLead = async (req, res) => {
     });
 
     res.status(201).json({
+      success: true,
       message: "Lead created successfully",
-      lead,
+      data: lead,
     });
 
     await logActivity({
@@ -50,8 +52,8 @@ const createLead = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error creating lead",
-      error: error.message,
     });
   }
 };
@@ -72,11 +74,11 @@ const getAllLeads = async (req, res) => {
         .sort({ createdAt: -1 });
     }
 
-    res.status(200).json(leads);
+    res.status(200).json({ success: true, data: leads });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching leads",
-      error: error.message,
     });
   }
 };
@@ -87,15 +89,16 @@ const getLeadById = async (req, res) => {
 
     if (!lead) {
       return res.status(404).json({
+        success: false,
         message: "Lead not found",
       });
     }
 
-    res.status(200).json(lead);
+    res.status(200).json({ success: true, data: lead });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching lead",
-      error: error.message,
     });
   }
 };
@@ -119,6 +122,7 @@ const updateLead = async (req, res) => {
 
     if (!lead) {
       return res.status(404).json({
+        success: false,
         message: "Lead not found",
       });
     }
@@ -128,6 +132,7 @@ const updateLead = async (req, res) => {
       lead.createdBy.toString() !== req.session.user.id
     ) {
       return res.status(403).json({
+        success: false,
         message: "You are not allowed to edit this lead",
       });
     }
@@ -147,8 +152,9 @@ const updateLead = async (req, res) => {
     const updatedLead = await lead.save();
 
     res.status(200).json({
+      success: true,
       message: "Lead updated successfully",
-      lead: updatedLead,
+      data: updatedLead,
     });
 
     await logActivity({
@@ -159,8 +165,8 @@ const updateLead = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error updating lead",
-      error: error.message,
     });
   }
 };
@@ -171,6 +177,7 @@ const deleteLead = async (req, res) => {
 
     if (!lead) {
       return res.status(404).json({
+        success: false,
         message: "Lead not found",
       });
     }
@@ -180,6 +187,7 @@ const deleteLead = async (req, res) => {
       lead.createdBy.toString() !== req.session.user.id
     ) {
       return res.status(403).json({
+        success: false,
         message: "You are not allowed to delete this lead",
       });
     }
@@ -187,6 +195,7 @@ const deleteLead = async (req, res) => {
     await Lead.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
+      success: true,
       message: "Lead deleted successfully",
     });
 
@@ -198,8 +207,8 @@ const deleteLead = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error deleting lead",
-      error: error.message,
     });
   }
 };

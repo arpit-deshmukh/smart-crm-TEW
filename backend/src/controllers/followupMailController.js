@@ -12,12 +12,14 @@ const sendBulkFollowupMail = async (req, res) => {
 
     if (!Array.isArray(followupIds) || followupIds.length === 0) {
       return res.status(400).json({
+        success: false,
         message: "Followup IDs are required",
       });
     }
 
     if (!targetStatus || !templateId) {
       return res.status(400).json({
+        success: false,
         message: "Target status and template are required",
       });
     }
@@ -29,6 +31,7 @@ const sendBulkFollowupMail = async (req, res) => {
 
     if (!template) {
       return res.status(404).json({
+        success: false,
         message: "Email template not found",
       });
     }
@@ -52,6 +55,7 @@ const sendBulkFollowupMail = async (req, res) => {
 
     if (followups.length === 0) {
       return res.status(400).json({
+        success: false,
         message: `No followups found on this page with status "${targetStatus}"`,
       });
     }
@@ -90,6 +94,7 @@ const sendBulkFollowupMail = async (req, res) => {
 
     if (!webhookUrl) {
       return res.status(500).json({
+        success: false,
         message: "n8n followup webhook URL is not configured",
       });
     }
@@ -109,8 +114,9 @@ const sendBulkFollowupMail = async (req, res) => {
     console.log("FOLLOWUP MAIL STEP 8: Followup statuses updated");
 
     return res.status(200).json({
+      success: true,
       message: `${followups.length} followup emails sent successfully`,
-      updatedCount: followups.length,
+      data: { updatedCount: followups.length },
     });
 
     await logActivity({
@@ -134,8 +140,8 @@ const sendBulkFollowupMail = async (req, res) => {
     }
 
     return res.status(500).json({
+      success: false,
       message: "Error sending followup emails",
-      error: error.message,
     });
   }
 };

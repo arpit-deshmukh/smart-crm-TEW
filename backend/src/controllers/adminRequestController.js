@@ -88,11 +88,11 @@ const getPendingRequests = async (req, res) => {
       .select("-password")
       .sort({ createdAt: -1 });
 
-    res.status(200).json(users);
+    res.status(200).json({ success: true, data: users });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error fetching requests",
-      error: error.message,
     });
   }
 };
@@ -103,11 +103,12 @@ const approveRequest = async (req, res) => {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
     if (user.approvalStatus !== "pending") {
       return res.status(400).json({
+        success: false,
         message: "Request already processed",
       });
     }
@@ -124,11 +125,11 @@ const approveRequest = async (req, res) => {
       approvedTemplate(user.name)
     );
 
-    res.status(200).json({ message: "Request approved successfully" });
+    res.status(200).json({ success: true, message: "Request approved successfully" });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error approving request",
-      error: error.message,
     });
   }
 };
@@ -139,11 +140,12 @@ const denyRequest = async (req, res) => {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
     if (user.approvalStatus !== "pending") {
       return res.status(400).json({
+        success: false,
         message: "Request already processed",
       });
     }
@@ -159,12 +161,12 @@ const denyRequest = async (req, res) => {
         deniedTemplate(user.name)
       );
 
-      res.status(200).json({ message: "Request denied and user deleted" });
+      res.status(200).json({ success: true, message: "Request denied and user deleted" });
 
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error denying request",
-      error: error.message,
     });
   }
 };
