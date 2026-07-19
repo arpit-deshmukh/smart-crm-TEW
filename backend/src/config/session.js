@@ -15,7 +15,7 @@ const sessionMiddleware = session({
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    sameSite: "lax",
   },
 });
 
