@@ -57,7 +57,7 @@ const DetailModal = ({ report, onClose }) => {
             {/* Pie Chart Section */}
             <div className="h-[300px] bg-slate-50 rounded-3xl p-4 flex flex-col items-center">
               <h4 className="text-sm font-bold text-slate-600 mb-2">Revenue Share (Top 6)</h4>
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                 <RePie>
                   <Pie
                     data={chartData}
