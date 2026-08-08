@@ -4,7 +4,11 @@ node_modules/
 !.env.example
 .DS_Store
 .vscode/
+
+#imp
 data1
+data2
+data3
 
 # Logs
 npm-debug.log*
